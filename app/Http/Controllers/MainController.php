@@ -32,9 +32,9 @@ class MainController extends Controller{
             ],
             [
                 'total_questions.required' => 'O número de questões deve ser definido',
-                'total_questions.integer' => 'O número deve ser inteiro',
-                'total_questions.min' => 'O questionário de ter pelo menos :min questões',
-                'total_questions.min' => 'O questionário de ter no máximo :max questões',
+                'total_questions.integer'  => 'O número deve ser inteiro',
+                'total_questions.min'      => 'O questionário de ter pelo menos :min questões',
+                'total_questions.min'      => 'O questionário de ter no máximo :max questões',
             ]
         );
         
@@ -46,11 +46,11 @@ class MainController extends Controller{
 
         // store the quiz in session
         session()->put([
-            'quiz' => $quiz,
-            'total_questions' => $total_questions,
+            'quiz'             => $quiz,
+            'total_questions'  => $total_questions,
             'current_question' => 1,
-            'correct_answers' => 0,
-            'wrong_answers' => 0
+            'correct_answers'  => 0,
+            'wrong_answers'    => 0
         ]);
         
         return redirect()->route('game');
@@ -60,50 +60,53 @@ class MainController extends Controller{
         $questions = [];
         $total_countries = count($this->app_data);
 
-        //create countries index for unique questions
+        // create countries index for unique questions
         $indexes = range(0, $total_countries -1);
         shuffle($indexes);
-        $indexes = array_slice($indexes, 0, $total_questions);
+        $indexes = array_slice($indexes, 0, $total_questions); 
 
         // create array of questions
         $question_number = 1;
         foreach($indexes as $index){
             $question['question_number'] = $question_number++;
-            $question['country'] = $this->app_data[$index]['country'];
+            $question['country']        = $this->app_data[$index]['country'];
             $question['correct_answer'] = $this->app_data[$index]['capital'];
 
-            // wrong answer
+            //wrong answers
             $other_capitals = array_column($this->app_data, 'capital');
 
-            // remove correct answers
+            //remove  correct answer
             $other_capitals = array_diff($other_capitals, [$question['correct_answer']]);
 
-            // shuffle the wrong answers
+            //shuffle the wrong answers
             shuffle($other_capitals);
             $question['wrong_answers'] = array_slice($other_capitals, 0, 3);
+
+            // store answer result
+            $question['correct'] = null;
+
+            $questions[] = $question;
         }
 
         return $questions;
     }
 
-    public function game() : View{
+    public function game(): View{
         $quiz = session('quiz');
         $total_questions = session('total_questions');
         $current_question = session('current_question') -1;
 
-        // prepare answeres to show in view
-        $answers   = $quiz[$current_question]['wrong_answers'];
-        $answers[] = $quiz[$current_question]['correct_answers'];
+        //prepare answers to show in view
+        $answers = $quiz[$current_question]['wrong_answers'];
+        $answers[] = $quiz[$current_question]['correct_answer'];
 
         shuffle($answers);
 
         return view('game')->with([
             'country'         => $quiz[$current_question]['country'],
-            'total_questions' => $total_questions,
+            'totalQuestions'  => $total_questions,
             'currentQuestion' => $current_question,
             'answers'         => $answers
         ]);
-
-        
     }
 }
