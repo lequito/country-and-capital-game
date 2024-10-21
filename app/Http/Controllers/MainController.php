@@ -126,10 +126,10 @@ class MainController extends Controller{
         $wrong_answers    = session('wrong_answers');
 
         if($answer == $correct_answer){
-            $correct_answer++;
+            $correct_answers++;
             $quiz[$current_question]['correct'] = true;
         }else{
-            $correct_answer++;
+            $wrong_answers++;
             $quiz[$current_question]['correct'] = false;
         }
 
@@ -168,7 +168,13 @@ class MainController extends Controller{
     }
 
     public function showResults(){
-        echo 'Mostrar resultado final';
-        dd(session()->all());
+       $total_questions = session('total_questions');
+
+       return view('final_results')->with([
+             'correct_answers' => session('correct_answers'),
+             'wrong_answers' => session('wrong_answers'),
+             'total_questions' => session('total_questions'),
+             'percentage' => round(session('correct_answers') / session('wrong_answers') * 100,2)
+       ]);
     }
 }
