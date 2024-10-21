@@ -12,7 +12,7 @@
         </div>
         
         <div class="text-center mt-5">
-            <a href="{{ route('game') }}" class="btn btn-primary mt-3 px-5">Avançar</a>
+            <a href="{{ route('next_question') }}" class="btn btn-primary mt-3 px-5">Avançar</a>
         </div>
     </div> 
 </x-main-layout>
